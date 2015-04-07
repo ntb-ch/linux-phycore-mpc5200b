@@ -1,0 +1,28 @@
+--- linux-3.2.61/fs/jffs2/scan.c	2014-07-11 14:34:01.000000000 +0200
++++ linux-phycore-mpc5200b/fs/jffs2/scan.c	2015-03-12 15:38:55.089388404 +0100
+@@ -16,6 +16,7 @@
+ #include <linux/pagemap.h>
+ #include <linux/crc32.h>
+ #include <linux/compiler.h>
++#include <asm/io.h>
+ #include "nodelist.h"
+ #include "summary.h"
+ #include "debug.h"
+@@ -509,7 +510,7 @@
+ 					sumptr = kmalloc(sumlen, GFP_KERNEL);
+ 					if (!sumptr)
+ 						return -ENOMEM;
+-					memcpy(sumptr + sumlen - buf_len, buf + buf_size - buf_len, buf_len);
++					memcpy_fromio(sumptr + sumlen - buf_len, buf + buf_size - buf_len, buf_len);
+ 				}
+ 				if (buf_len < sumlen) {
+ 					/* Need to read more so that the entire summary node is present */
+@@ -1039,7 +1040,7 @@
+ 	if (!fd) {
+ 		return -ENOMEM;
+ 	}
+-	memcpy(&fd->name, rd->name, checkedlen);
++	memcpy_fromio(&fd->name, rd->name, checkedlen);
+ 	fd->name[checkedlen] = 0;
+ 
+ 	crc = crc32(0, fd->name, rd->nsize);
